@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(wsl --status 2>&1)",
+      "PowerShell(wsl --list --verbose 2>&1)",
+      "PowerShell(Get-WmiObject -Class Win32_Processor)",
+      "PowerShell(\\([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent\\(\\)\\).IsInRole\\([Security.Principal.WindowsBuiltInRole]::Administrator\\))",
+      "PowerShell(Start-Process powershell -Verb RunAs -ArgumentList \"-NoProfile -Command `\"wsl --install --no-distribution`\"\" -Wait)",
+      "PowerShell($dest = \"$env:USERPROFILE\\\\Desktop\\\\DockerDesktopInstaller.exe\"; Write-Host \"Downloading Docker Desktop to $dest ...\"; Invoke-WebRequest -Uri \"https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe\" -OutFile $dest -UseBasicParsing; Write-Host \"Download complete: $\\(Get-Item $dest | Select-Object -ExpandProperty Length\\) bytes\")",
+      "PowerShell(Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform)",
+      "PowerShell(Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux)",
+      "PowerShell(Start-Process powershell -Verb RunAs -ArgumentList \"-NoProfile -Command `\"Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform | Select-Object State; Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux | Select-Object State`\" | Out-File '$env:TEMP\\\\wsl_feature_status.txt'\" -Wait; Start-Sleep 3; Get-Content \"$env:TEMP\\\\wsl_feature_status.txt\" 2>&1)",
+      "PowerShell($installer = \"$env:USERPROFILE\\\\Desktop\\\\DockerDesktopInstaller.exe\"; if \\(Test-Path $installer\\) { $size = \\(Get-Item $installer\\).Length / 1MB; \"Docker Desktop installer: $\\([math]::Round\\($size,1\\)\\) MB — READY\" } else { \"NOT FOUND\" })"
+    ]
+  }
+}
