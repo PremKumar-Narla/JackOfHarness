@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: joh_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: jackofharness
+      POSTGRES_USER: joh
+      POSTGRES_PASSWORD: joh_secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - joh_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U joh -d jackofharness"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: joh_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+asyncpg://joh:joh_secret@db:5432/jackofharness
+      CORS_ORIGINS: "http://localhost:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    networks:
+      - joh_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: joh_frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+    networks:
+      - joh_net
+
+volumes:
+  postgres_data:
+
+networks:
+  joh_net:
+    driver: bridge

@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "highlight.js/styles/github-dark.css";
+
+html,
+body {
+  @apply bg-surface text-white;
+}
+
+/* Prose overrides for dark theme */
+.prose-invert pre {
+  @apply bg-black/40 rounded-lg;
+}
+.prose-invert code:not(pre code) {
+  @apply bg-white/10 px-1 py-0.5 rounded text-violet-300;
+}
